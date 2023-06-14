@@ -31,11 +31,18 @@ gulp trust-dev-cert
 
 aceptar el mensaje del certificado que se muestra.
 
-abir el proyecto en VSCode
+abrir el proyecto en VSCode
 code .
+
 gulp serve --nobrowser
 (en caso de que de error realizar el siguiente comando)
 set-executionpolicy bypass -scope process
 
 gulp serve --nobrowser
-dar permisos de red 
+dar permisos de red de windows firewall
+
+En la terminal:
+Control + shift + B
+Elegir la opcion npm build.
+Ir al navegador y copiar el siguiente link en el cual sustituir {tenantDomain} por nuesto usuario admin. 
+"https://{tenantDomain}/_layouts/workbench.aspx"
