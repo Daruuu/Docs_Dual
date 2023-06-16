@@ -47,22 +47,23 @@ WEBPART
 La tercera pregunta seleccionamos:
 REACT
 
-Una vez termine de instalarse todo ejecutamos lo siguiente:
+Una vez termine de instalarse todo, dentro de la carpeta del proyecto 
+ejecutamos lo siguiente:
 gulp trust-dev-cert
 
 (en caso de error realizar el siguiente comando)
 set-executionpolicy bypass -scope process
 
-Aceptar el mensaje del certificado que se muestra.
+Una vez terminado el proceso aceptamos el mensaje del certificado que se muestra.
 
-abrir el proyecto en VSCode
+Abrimos el proyecto en VSCode
 code .
 
 Una vez dentro del proyecto buscar el siguiente fichero:
 ./config/server.json
 
-Buscamos la propiedad initialPage: modificar de tal manera que quede asi:
+Buscamos la propiedad initialPage: modificar de tal manera que tenga el siguiente formato:
 
-modificar el dominio por el nuestro.
+Sustituir el dominio que es {}, por el espacio empresarial de SharePoint.
 
 "https://{tenantDomain}.sharepoint.com/sites/dev/_layouts/workbench.aspx"
