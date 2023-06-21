@@ -10,7 +10,6 @@ node -v
 
 npm install gulp-cli yo @microsoft/generator-sharepoint --location=global
 
-
 Abrimos una cmd y ejecutamos lo siguiente:
 
 npm install gulp-cli --global
@@ -39,15 +38,16 @@ yo @microsoft/sharepoint
 Respondemos a las perguntas para crear el entorno.
 
 La primera pregunta:
-la dejamos por default(presionamos enter).
+la dejamos por default el nombre(presionamos enter).
 
 La segunda pregunta seleccionamos:
 WEBPART 
 
 La tercera pregunta seleccionamos:
-REACT
+no framework
+//REACT
 
-Una vez termine de instalarse todo, dentro de la carpeta del proyecto 
+Una vez termine de instalarse todo, dentro de la carpeta del proyecto.
 ejecutamos lo siguiente:
 gulp trust-dev-cert
 
@@ -55,6 +55,9 @@ gulp trust-dev-cert
 set-executionpolicy bypass -scope process
 
 Una vez terminado el proceso aceptamos el mensaje del certificado que se muestra.
+
+Ejecutamos leo siguiente:
+gulp serve
 
 Abrimos el proyecto en VSCode
 code .
