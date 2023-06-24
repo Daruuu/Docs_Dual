@@ -1,71 +1,104 @@
-## Set up sharepoint on windows 10
+## Set up sharepoint on Windows 10
 
-Instalar nodejs via nvm con la version 16.18.1
+To install SharePoint on Windows 10, follow these steps:
 
+1. Install Node.js via NVM with version 16.18.1:
+
+```bash
 nvm -l
 nvm install 16.18.1
 nvm use 16.18.1
+```
 
+2. Verify the Node.js version:
+
+```bash
 node -v
+```
 
+3. Install the required packages globally:
+
+```bash
 npm install gulp-cli yo @microsoft/generator-sharepoint --location=global
+```
 
-Abrimos una cmd y ejecutamos lo siguiente:
+4. Open a command prompt and RUN AS ADMINISTRATOR the following commands:
 
+```bash
 npm install gulp-cli --global
 npm install yo --global
 npm install  @microsoft/generator-sharepoint --global
 npm install gulp --global
+```
 
-En la siguiente ruta se encuentra las versiones de nodejs que tenemos instalado:
-C:\Users\[Vuestro Usuario]\AppData\Roaming\nvm
+5. Locate the installed versions do Node.js at the following path:
 
-Ahora ejecutar lo suguiente en cmd(este comando debe dar error)
+```bash
+C:\Users\[Your Username]\AppData\Roaming\nvm
+```
+
+6. Now, run the following command in the command prompt (this command may give an error):
+```bash
 gulp trust-dev-cert
+```
 
+7. Create a test project:
+```bash
+md [project_name]
+```
+8. Access the newly created project folder:
 
-Crearemos un proyecto de prueba:
+```bash
+cd project_name
+```
 
-md nombre_proyecto
+9. Inside the project folder, execute the following command:
 
-acceder a la carpeta del nuevo proyecto:
-cd nombre_proyecto
-
-Dentro del projecto ejecutar el siguiente comando:
-
+```bash
 yo @microsoft/sharepoint
+```
 
-Respondemos a las perguntas para crear el entorno.
+10. Answer the questions to create the environment:
 
-La primera pregunta:
-la dejamos por default el nombre(presionamos enter).
+    - Leave the first question with the default name (press Enter).
+    
+    - Select "WEBPART" for the second question.
+    
+    - Select "No framework.
 
-La segunda pregunta seleccionamos:
-WEBPART 
+12. Once everything is installed, inside the project folder, run the following command:
 
-La tercera pregunta seleccionamos:
-no framework
-//REACT
-
-Una vez termine de instalarse todo, dentro de la carpeta del proyecto.
-ejecutamos lo siguiente:
+```bash
 gulp trust-dev-cert
-
-(en caso de error realizar el siguiente comando)
+```
+(If there's an error, run the following command:)
+```bash
 set-executionpolicy bypass -scope process
+```
+12. Accept the certificate message that appears to complete the process.
 
-Una vez terminado el proceso aceptamos el mensaje del certificado que se muestra.
-
-Ejecutamos leo siguiente:
+13. Run the following command:
+```bash
 gulp serve
+```
 
-Abrimos el proyecto en VSCode
+14. Open the project in Visual Studio Code.
+```bash
 code .
+```
 
-Una vez dentro del proyecto buscar el siguiente fichero:
+15. Once inside the project, locate the following file:
+```bash
 ./config/server.json
+```
 
-Buscamos la propiedad initialPage: modificar de tal manera que tenga el siguiente formato:
+16. Find the initialPage property and modify it as follows:
+Replace the {tenantDomain} with the SharePoint's enterprise space.
+Example: 
+
+```bash
+"https://{tenantDomain}.sharepoint.com/sites/dev/_layouts/workbench.aspx"
+```
 
 Sustituir el dominio que es {}, por el espacio empresarial de SharePoint.
 
