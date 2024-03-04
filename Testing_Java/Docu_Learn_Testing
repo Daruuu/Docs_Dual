@@ -1,0 +1,45 @@
+## Tecnica Given, When, Then
+
+La técnica de "Given, When, Then" (Dado, Cuando, Entonces) es una técnica 
+popular para escribir pruebas unitarias y especificaciones de comportamiento.
+Proporciona una estructura clara para organizar y escribir tus pruebas.
+Aquí te explico cómo aplicar esta técnica en JUnit 4:
+
+### Given (Dado): 
+En esta sección, configuras el estado inicial necesario para tu prueba.
+Esto puede incluir la creación de objetos, la inicialización de variables
+y la configuración de mocks si estás utilizando librerías de mocking como Mockito.
+
+### When (Cuando):
+Esta sección contiene el código que estás probando, es decir, la acción que quieres probar.
+Por lo general, esto implica llamar a un método o una función con ciertos parámetros o un cierto estado.
+
+### Then (Entonces):
+Aquí verificas el resultado de la acción realizada en la sección "When".
+Puedes verificar el valor de retorno de un método, el estado de un 
+objeto después de la acción, o los efectos secundarios de la acción 
+(como cambios en el estado de otros objetos).
+
+Veamos un ejemplo de cómo se aplicaría la técnica "Given, When, Then" en un test de JUnit 4:
+
+``` java
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+
+public class CalculatorTest {
+
+    @Test
+    public void testAdd() {
+        // Given
+        Calculator calculator = new Calculator();
+        int a = 2;
+        int b = 3;
+        
+        // When
+        int result = calculator.add(a, b);
+        
+        // Then
+        assertEquals(5, result);
+    }
+}
+```
