@@ -43,3 +43,234 @@ public class CalculatorTest {
     }
 }
 ```
+
+## Listado de diferentes casos de testing en Java utilizando JUnit 4 y Mockito.
+
+Primero el metodo el cual queremos generar el test y despues el test de como se ha creado.
+
+``` java
+```
+El siguiente test pertenece a un servicio usuarioServicioImpl();
+
+``` java
+public class UsuarioServiceImpl implements UsuarioService{
+
+
+	private static final long serialVersionUID = 9166747878883420728L;
+	private static final Logger LOGGER = LoggerFactory.getLogger(UsuarioServiceImpl.class);
+	private static final long MILLSECS_PER_DAY = 24 * 60 * 60 * 1000;
+
+    @Override
+	public Usuario getUsuarioById(Long usuarioId) {
+		if(usuarioId != null){
+			Usuario usr =  usuarioRepositoryImpl.findById(usuarioId).orElse(new Usuario());
+			return usr;
+		}else{
+			return null;
+		}
+	}
+```
+
+``` java
+@Test
+	public void getUsuarioById_Test() {
+		// given
+		Long usuarioId = 1L;
+		Usuario mockUsuario01 = new Usuario();
+		mockUsuario01.setUsuarioId(usuarioId);
+
+		// when
+		Mockito.when(usuarioRepositoryImpl.findById(any())).thenReturn(Optional.of(mockUsuario01));
+		usuarioServiceImpl.getUsuarioById(usuarioId);
+
+		// then
+		verify(usuarioRepositoryImpl, atLeast(1)).findById(usuarioId);
+	}
+```
+
+
+Metodo que retorna un Usuario.
+
+``` java
+public Usuario getUsuarioByUsername(String username){
+		return usuarioRepositoryImpl.getUsuarioByUsername(username);
+	}
+```
+
+``` java
+@Test
+	public void getUsuarioByUsername_Test() {
+		// given
+		String username = "first user";
+		Usuario mockUsuario01 = new Usuario();
+		mockUsuario01.setNombreUsuario(username);
+
+		// when
+		Mockito.when(usuarioRepositoryImpl.getUsuarioByUsername(any())).thenReturn(mockUsuario01);
+		usuarioServiceImpl.getUsuarioByUsername(username);
+
+		// then
+		verify(usuarioRepositoryImpl, atLeast(1)).getUsuarioByUsername(username);
+
+	}
+```
+
+
+
+``` java
+
+	@Override
+	public List<Usuario> getUsuariosBusqueda(String nif, String nombreUsuario,
+			String nombre, String apellidos, Date fechaCreacionInicio, Date fechaCreacionFin, Long areaUsuarioId, Long tipoPerfil, String nombreRecurso) {
+
+		Map<String, Object> mapaParametros = new HashMap<String, Object>();
+		String queryString = "select usr from Usuario usr left outer join fetch usr.catAreaUsuario ";
+		String queryWhere = null;
+
+		if (StringUtils.isNotBlank(nif)){
+			queryWhere = " where ";
+
+			queryWhere = queryWhere + " TRANSLATE(UPPER(usr.nif), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU') like TRANSLATE(UPPER(('%'||:nif||'%')), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU') ";
+			mapaParametros.put("nif", nif);
+		}
+		if (StringUtils.isNotBlank(nombreUsuario)){
+			if (queryWhere == null){
+				queryWhere = " where ";
+			}else{
+				queryWhere = queryWhere + " and ";
+			}
+			queryWhere = queryWhere + " TRANSLATE(UPPER(usr.nombreUsuario), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU') like TRANSLATE(UPPER(('%'||:nombreUsuario||'%')), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU') ";
+			mapaParametros.put("nombreUsuario", nombreUsuario);
+		}
+		if (StringUtils.isNotBlank(nombre)){
+			if (queryWhere == null){
+				queryWhere = " where ";
+			}else{
+				queryWhere = queryWhere + " and ";
+			}
+			queryWhere = queryWhere + " TRANSLATE(UPPER(usr.nombre), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU') like TRANSLATE(UPPER(('%'||:nombre||'%')), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU') ";
+			mapaParametros.put("nombre", nombre);
+		}
+		if (StringUtils.isNotBlank(apellidos)){
+			if (queryWhere == null){
+				queryWhere = " where ";
+			}else{
+				queryWhere = queryWhere + " and ";
+			}
+			queryWhere = queryWhere + " TRANSLATE(UPPER(usr.apellidos), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU') like TRANSLATE(UPPER(('%'||:apellidos||'%')), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU') ";
+			mapaParametros.put("apellidos", apellidos);
+		}
+		if (fechaCreacionInicio != null
+				&& fechaCreacionFin != null){
+			if (queryWhere == null){
+				queryWhere = " where ";
+			}else{
+				queryWhere = queryWhere + " and ";
+			}
+			queryWhere = queryWhere + " usr.fechaCreacion between :fechaCreacionInicio and :fechaCreacionFin ";
+			mapaParametros.put("fechaCreacionInicio", fechaCreacionInicio);
+			mapaParametros.put("fechaCreacionFin", fechaCreacionFin);
+		}
+		if (areaUsuarioId != null){
+			if (queryWhere == null){
+				queryWhere = " where ";
+			}else{
+				queryWhere = queryWhere + " and ";
+			}
+			queryWhere = queryWhere + " usr.catAreaUsuario.catalogoId = :areaUsuarioId ";
+			mapaParametros.put("areaUsuarioId", areaUsuarioId);
+		}
+		if (tipoPerfil != null){
+			if (queryWhere == null){
+				queryWhere = " where ";
+			}else{
+				queryWhere = queryWhere + " and ";
+			}
+			queryWhere = queryWhere + " exists(select p.id from Perfil p where p.usuario.id = usr.id and p.tipoPerfil.id = :tipoPerfil) ";
+			mapaParametros.put("tipoPerfil", tipoPerfil);
+		}
+		if (nombreRecurso != null){
+			if (queryWhere == null){
+				queryWhere = " where ";
+			}else{
+				queryWhere = queryWhere + " and ";
+			}
+			queryWhere = queryWhere + " exists(select p.id from Perfil p where p.usuario.id = usr.id and TRANSLATE(UPPER(p.recurso.nombre), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU') like TRANSLATE(UPPER(('%'||:nombreRecurso||'%')), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU')) ";
+			mapaParametros.put("nombreRecurso", nombreRecurso);
+		}
+
+
+		if (queryWhere != null){
+			queryString = queryString + queryWhere;
+		}
+
+		return usuarioRepositoryImpl.getListGenericoByQueryAndMap(queryString, mapaParametros);
+	}
+
+```
+
+
+
+
+en este test lo que hemos usado para verificar los datos que se correctos y existan ha sido utilizar un ArgumentCaptor, que se utiliza para capturar un tipo de dato y comprobarlo .
+
+``` java
+@Test
+	public void getUsuariosBusqueda_Test() {
+		// given
+		Map<String, Object> mapaParametros = new HashMap<String, Object>();
+		String queryString = "select usr from Usuario usr left outer join fetch usr.catAreaUsuario ";
+		queryString += " where ";
+		String and = " and ";
+		String queryNif = " TRANSLATE(UPPER(usr.nif), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU') like TRANSLATE(UPPER(('%'||:nif||'%')), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU') ";
+		String queryNombreUsuario = " TRANSLATE(UPPER(usr.nombreUsuario), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU') like TRANSLATE(UPPER(('%'||:nombreUsuario||'%')), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU') ";
+		String queryNombre = " TRANSLATE(UPPER(usr.nombre), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU') like TRANSLATE(UPPER(('%'||:nombre||'%')), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU') ";
+		String parte2 = " and  TRANSLATE(UPPER(usr.apellidos), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU') like TRANSLATE(UPPER(('%'||:apellidos||'%')), "
+				+ "'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU')  and  usr.fechaCreacion between :fechaCreacionInicio and :fechaCreacionFin  and  usr.catAreaUsuario.catalogoId ="
+				+ " :areaUsuarioId  and  exists(select p.id from Perfil p where p.usuario.id = usr.id and p.tipoPerfil.id = :tipoPerfil)  "
+				+ "and  exists(select p.id from Perfil p where p.usuario.id = usr.id and TRANSLATE(UPPER(p.recurso.nombre), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU') "
+				+ "like TRANSLATE(UPPER(('%'||:nombreRecurso||'%')), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU')) ";
+		String queryFinal = queryString + queryNif + and + queryNombreUsuario + and + queryNombre + parte2;
+
+		String nif = "abcdef";
+		String nombreUsuario = "user01";
+		String nombre = "hello";
+		String apellidos = "surname01";
+		Date fechaCreacionInicio = new Date();
+		Date fechaCreacionFin = new Date();
+		Long areaUsuarioId = 123L;
+		Long tipoPerfil = 1L;
+		String nombreRecurso = "nameRecurso01";
+
+		mapaParametros.put("nif", nif);
+		mapaParametros.put("nombreUsuario", nombreUsuario);
+		mapaParametros.put("nombre", nombre);
+		mapaParametros.put("apellidos", apellidos);
+		mapaParametros.put("fechaCreacionInicio", fechaCreacionInicio);
+		mapaParametros.put("fechaCreacionFin", fechaCreacionFin);
+		mapaParametros.put("areaUsuarioId", areaUsuarioId);
+		mapaParametros.put("tipoPerfil", tipoPerfil);
+		mapaParametros.put("nombreRecurso", nombreRecurso);
+
+		Mockito.when(usuarioRepositoryImpl.getListGenericoByQueryAndMap(anyString(), anyMap()))
+				.thenReturn(new ArrayList<Usuario>());
+
+		// when
+		usuarioServiceImpl.getUsuariosBusqueda(nif, nombreUsuario, nombre, apellidos, fechaCreacionInicio,
+				fechaCreacionFin, areaUsuarioId, tipoPerfil, nombreRecurso);
+
+		// then
+		ArgumentCaptor<String> queryCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<Map<String, Object>> paramsCaptor = ArgumentCaptor.forClass(Map.class);
+
+		verify(usuarioRepositoryImpl, atLeast(1)).getListGenericoByQueryAndMap(queryCaptor.capture(),
+				paramsCaptor.capture());
+
+		String capturedQuery = queryFinal;
+		Map<String, Object> capturedParams = paramsCaptor.getValue();
+
+		// verify
+		assertTrue(capturedQuery.contains("where"));
+		assertEquals(mapaParametros, capturedParams);
+	}
+```
