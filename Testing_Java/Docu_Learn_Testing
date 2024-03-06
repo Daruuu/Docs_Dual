@@ -274,3 +274,79 @@ en este test lo que hemos usado para verificar los datos que se correctos y exis
 		assertEquals(mapaParametros, capturedParams);
 	}
 ```
+
+### Ejemplo 3:
+En este ejemplo nos dan como parametros un Pageable y un mapa filtros,
+en el testing cada bloque de un if-else normalmente suelo ser un 
+test diferente para que el coverage abarque un 100 %.
+
+``` java
+ @Override
+	public Page<Usuario> getPageBuscadorUsuarios(Pageable request, Map<ParametrosDatamodelEnum, Object> filtros) {
+		Map<String,Object> mapaParametros = new HashMap<String, Object>();
+		String queryString = "select usr from Usuario usr left outer join fetch usr.catAreaUsuario ";
+		String queryWhere = null;
+
+		if(filtros.containsKey(ParametrosDatamodelEnum.NOMBRE_USUARIO)
+				&& filtros.get(ParametrosDatamodelEnum.NOMBRE_USUARIO) != null){
+			if (queryWhere == null){
+				queryWhere = " where ";
+			}else{
+				queryWhere = queryWhere + " and ";
+			}
+			queryWhere = queryWhere + " TRANSLATE(UPPER(usr.nombreUsuario), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU') like TRANSLATE(UPPER(('%'||:nombreUsuario||'%')), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU') ";
+			mapaParametros.put("nombreUsuario", filtros.get(ParametrosDatamodelEnum.NOMBRE_USUARIO));
+		}
+		if (queryWhere != null){
+			queryString = queryString + queryWhere;
+		}
+
+		Page<Usuario> usuarios = usuarioRepositoryImpl.getPageGenericoByQueryAndMap(queryString, mapaParametros, request);
+		return usuarios;
+	}
+```
+
+``` java
+	/**
+	 * {@link UsuarioServiceImpl#getPageBuscadorUsuarios(Pageable, Map)}
+	 */
+	@Test
+	public void	getPageBuscadorUsuarios_USUARIO_NIF_Test01() {
+		
+		// given
+		Pageable request = Pageable.ofSize(1);
+		Map<ParametrosDatamodelEnum, Object> filtros = new HashMap<ParametrosDatamodelEnum, Object>();
+		Map<String, Object> mapaParametros = new HashMap<String, Object>();
+
+		String	queryString = "select usr from Usuario usr left outer join fetch usr.catAreaUsuario ";
+		String	queryWhere = null;
+		queryWhere = queryString + queryWhere + " TRANSLATE(UPPER(usr.nif), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU') like TRANSLATE(UPPER(('%'||:nif||'%')), 'ÁÉÍÓÚÄËÏÖÜÀÈÌÒÙÂÊÎÔÛ', 'AEIOUAEIOUAEIOUAEIOU') ";
+		String	usuarioNIF = "1234G";
+		
+		filtros.put(ParametrosDatamodelEnum.USUARIO_NIF, usuarioNIF);
+		mapaParametros.put("nif", filtros.get(ParametrosDatamodelEnum.USUARIO_NIF));
+
+		// SIMULAR UNA LISTA DE USUARIOS QUE COINCIDA CON FILTROS
+		Usuario user01 = new Usuario();
+		user01.setUsuarioId(12L);
+
+		Usuario user02 = new Usuario();
+		user02.setUsuarioId(34L);
+
+		List<Usuario> usuariosMock = new ArrayList<Usuario>();
+		usuariosMock.add(user01);
+		usuariosMock.add(user02);
+		Page<Usuario> usuariosReturn = new PageImpl<Usuario>(usuariosMock);
+		
+		// when
+		Mockito.when(usuarioRepositoryImpl.getPageGenericoByQueryAndMap(anyString(), anyMap(), any())).thenReturn(usuariosReturn);
+		Page<Usuario> usuariosEncontrados = usuarioServiceImpl.getPageBuscadorUsuarios(request, filtros);
+		
+		// then
+		assertEquals(2, usuariosEncontrados.getTotalElements());
+		assertTrue(queryFinal.contains(" where "));
+	}
+```
+
+
+
