@@ -1,6 +1,16 @@
+# Test Driven Development
+
+The cycle at the heart of TDD is: write a test; write some code to get it working;
+refactor the code to be as simple an implementation of the tested features as
+possible. Repeat.
+(![TDD cicle](tdd.png))
+
+![golden rule testing](image.png)
+
+
 ## Tecnica Given, When, Then
 
-La técnica de "Given, When, Then" (Dado, Cuando, Entonces) es una técnica 
+La técnica de **"Given, When, Then"** (Dado, Cuando, Entonces) es una técnica 
 popular para escribir pruebas unitarias y especificaciones de comportamiento.
 Proporciona una estructura clara para organizar y escribir tus pruebas.
 Aquí te explico cómo aplicar esta técnica en JUnit 4:
@@ -441,6 +451,3 @@ test diferente para que el coverage abarque un 100 %.
 		assertTrue(queryFinal.contains(" where "));
 	}
 ```
-
-
-
