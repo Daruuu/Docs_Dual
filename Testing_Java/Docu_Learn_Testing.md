@@ -22,6 +22,100 @@ objeto después de la acción, o los efectos secundarios de la acción
 
 Veamos un ejemplo de cómo se aplicaría la técnica "Given, When, Then" en un test de JUnit 4:
 
+## Que es un mock? y un Spy?
+Tanto Mock como Spy son usados en testing para aislar el sistema a testear(SUT),
+divide el codigo a ser testeado de las posibles dependecias que pueden existir (otra clase, una conexion a db, etc).
+
+### Mock
+Es un **simulador** o un doble de un objeto. Contiene todos los metodos del
+objecto original. Pero son falsos(no contienen implementaciones).
+Cuando se usa un Mock es obligatorio definir el comportamiento de sus metodos.
+
+``` java
+@Test
+public void whenITryToCutACarrotThenTrue()
+{
+   Knife knife = mock( Knife.class );
+   doReturn( true ).when( knife ).cut( "carrot" );
+
+   assertEquals( knife.cut("carrot"), true );
+}
+
+@Test
+public void	whenITryToCutWaterThenFalse()
+{
+   Knife knife = mock( Knife.class );
+   doReturn( false ).when( knife ).cut( "water" );
+
+   assertEquals( knife.cut("water", false);
+}
+```
+
+Tenemos una clase Knife con un método: cut(), pero no estamos interesados
+realmente en la funcionalidad que esté implementada en el método (si es que hay alguna),
+así que usamos un "doReturn(...)" para simular la funcionalidad
+y devolver el valor que deseemos.
+
+### Spy
+
+Spy es como un Mock. La diferencia es que podemos utilizarlo como un Objecto real
+y que pueda llamar a las implementaciones de los emtodos reales.
+Tambien tenemos la opcion de simular la funcionalidad de cual metodo, como con el _Mock_ .
+
+
+Clase Knife:
+
+``` java
+public class Knife{
+	...
+public boolean cut( String something )
+{
+     return true;
+}
+	...
+}
+``` 
+Los test podrian ser tal que asi:
+
+En este caso, el objeto "knife" funciona como un objeto normal y
+cuando llamamos al método "cut()",
+estamos llamando al método real de la clase "Knife".
+Sin embargo, debido a que este método siempre devuelve "true".
+``` java
+@Test
+public void whenITryToCutACarrotThenTrue()
+{
+   Knife knife = spy( Knife.class );
+   
+   assertEquals( knife.cut("carrot"), true );
+}
+```
+
+En el segundo test necesitamos simular su comportamiento para pasar el test,
+ya que necesitamos un "false", así que usamos el "doReturn(...)".
+
+``` java
+@Test
+public void whenITryToCutWaterThenFalse()
+{
+   Knife knife = spy( Knife.class );
+   doReturn( false ).when( knife ).cut( "water" );
+
+   assertEquals( knife.cut("water", false);
+}
+```
+
+La diferencia es que con Mock es obligatorio simular los comportamientos de los métodos.
+Los Mocks son muy usados cuando se programa haciendo TDD (Test Driven Development o Desarrollo basado en tests),
+ya que no requieren de que haya ninguna funcionalidad implementada.
+Sin embargo, Spy, aunque puede simular el comportamiento de los métodos al igual que Mock,
+también nos da la oportunidad de llamar a la implementación real de los métodos del objeto.
+Es usado cuando nos interesa mantener la consistencia de los métodos ya implementados
+con la nueva parte que estemos desarrollando y realizando TDD.
+
+
+
+---------------------------------------------------------------------
 ``` java
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
